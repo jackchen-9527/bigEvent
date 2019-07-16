@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
 
+    <!-- 导入bootstrap的js文件 -->
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -24,19 +26,19 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="李思思">
+                        <input type="text" name="username" class="form-control username" value="李思思">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">昵称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="思思">
+                        <input type="text" name="nickname" class="form-control nickname"  value="思思">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="lisisi@126.com">
+                        <input type="text" name="email" class="form-control email"  value="lisisi@126.com">
                     </div>
                 </div>
                 
@@ -44,14 +46,14 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
-                        <input type="file" id="exampleInputFile">
+                        <input type="file" name="user_pic" id="exampleInputFile">
                     </div>
                 </div>
 
                 <div class="form-group">
                         <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
                         <div class="col-sm-4">
-                            <input type="password" class="form-control" id="inputEmail3" value="12345678">
+                            <input type="password" name="password" class="form-control password"  value="12345678">
                         </div>
                     </div>
                
@@ -65,6 +67,48 @@
         </div>
     </div>
 
+
+    <script >
+        // 1.打开个人信息页面   发送请求获取个人信息
+        // 2.通过按钮的点击事件保存输入的个人信息
+
+        // 入口函数
+        $(function(){
+            // 图片预览
+            $('#exampleInputFile').on('change',function(){
+
+                var url=URL.createObjectURL(this.files[0]);
+                $('.user_pic').attr('src',url);
+            })
+
+
+            // 获取值并显示在对应的标签中
+            
+            // 发送请求获取个人信息
+            $.ajax({
+                type:'get',  //可省略
+                url:'http://localhost:8000/admin/userinfo_get',
+                success:function(backData){
+                    if(backData.code==200){
+                        // 用户信息获取成功  将信息输入对应的标签
+                        // 给form表单中需要获取值的标签设置name属性
+
+                        // $('.username').val(backData.data.username);
+                        // $('.nickname').val(backData.data.nickname);
+                        // $('.email').val(backData.data.email);
+                        // $('.password').val(backData.data.password);
+
+                        // 遍历
+                        for(var key in backData.data){
+                            $('.'+key).val(backData.data[key]);
+                        }
+                        $('.user_pic').attr('src',backData.data.user_pic)
+                        
+                    }
+                }
+            })
+        })
+    </script>
 </body>
 
 </html>

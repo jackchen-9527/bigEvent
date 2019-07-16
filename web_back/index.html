@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
+    
 </head>
 
 <body>
@@ -102,6 +103,46 @@
            }
         }
 
+    </script>
+
+    <script>
+    
+    // 入口函数
+        $(function(){
+
+            // 退出的点击事件
+            $('.icon-tuichu').parent().on('click',function(e){
+                // 阻止默认事件的发生
+                e.preventDefault();
+
+                // 发送ajax请求
+                $.post({
+                    url:'http://localhost:8000/admin/logout',
+                    success:function(backData){
+                        if(backData.code==200){
+                            // 退出成功  跳转到登录界面
+                            location.href='./login.html';
+                        }
+                    }
+                })
+
+            }) 
+
+
+            // 发送请求  获取个人信息并显示在主页
+            $.ajax({
+                type:'get',   //可不写,在type不写的会后默认为get
+                url:'http://localhost:8000/admin/getuser',
+                success:function(backData){
+                    // 获取成功  则将值显示在对应的标签中
+                    if(backData.code == 200){
+                        $('.user_info').children('span').html('欢迎&nbsp;&nbsp;'+ backData.data.nickname);
+                        $('.user_info').children('img').attr('src',backData.data.user_pic);
+                        $('.user_center_link').chidren('img').attr('src',backData.data.user_pic)
+                    }
+                }
+            })
+        })
     </script>
 
 </body>

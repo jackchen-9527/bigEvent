@@ -116,15 +116,15 @@
                     <td>{{$value.name}}</td>
                     <td>{{$value.slug}}</td>
                     <td class="text-center">
-                        <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});"
-                            class="btn btn-info btn-xs">编辑</a>
-                        <a href="javascript:deleteTr( {{$value.id}} );" class="btn btn-danger btn-xs">删除</a>
+                        <a href="#" data-id="{{$value.id}}" class="btn btn-info btn-xs btn-edit">编辑</a>
+                        <a href="#" data-id="{{$value.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
                     </td>
                 </tr>
             {{/each}}
     </script>
 
-    <script id="tmp_cate2" type="text/html">
+    <!-- <script id="tmp_cate2" type="text/html">
+        这种方式会需要再次重新获取id
         <tr>
             <td>{{name}}</td>
             <td>{{slug}}</td>
@@ -133,7 +133,7 @@
                 <a href="javascript:deleteTr( 1 );" class="btn btn-danger btn-xs">删除</a>
                 </td>
             </tr>
-    </script>
+    </script> -->
 
     <script>
         $('#addModal').modal({
@@ -214,24 +214,56 @@
                             // location.reload();
 
                             // 2.ajax再次发送请求显示在页面上  调用getData()函数
-                            // getData();    //这种方式性能不高
+                            getData();    //这种方式性能不高
 
+                            //下面的方式需要重新获取id传参,麻烦故不用 
 
                             // 直接操作DOM树,给当前的dom树添加一个tr
                             // 制造模板
-                            var obj={
-                                name:cateName,
-                                slug:cateSlug,
-                            }
-                            var html2=template('tmp_cate2',obj);
-                            //在这里是向喂不添加一个新的类   如果用html会全部替换掉    用append()方法最合适
-                            $('tbody').append(html2)
+                            // var obj={
+                            //     name:cateName,
+                            //     slug:cateSlug,
+                            // }
+                            // var html2=template('tmp_cate2',obj);
+                            // //在这里是向喂不添加一个新的类   如果用html会全部替换掉    用append()方法最合适
+                            // $('tbody').append(html2)
 
                         }
                     }
 
                 })
                 $('#addModal').modal('hide');
+            })
+
+
+            // 需求 :删除文章分类
+            $('tbody').on('click','.btn-delete',function(e){
+
+                // 阻止默认事件  阻止默认跳转
+                e.preventDefault();
+
+                // 可能是用户不小心点到所以需要用户确认是否删除
+                // confirm
+                if(confirm('你确认删除吗')){
+                    var that=$(this);
+
+                    var  cateId=$(this).attr('data-id');
+
+                    // 发送ajax请求  删除
+                    $.ajax({
+                        type:'post',
+                        url:'http://localhost:8000/admin/category_delete',
+                        data:{
+                            id:cateId,
+                        },
+                        success:function(backData){
+                            if(backData.code==200){
+                                // 当前按钮式td   我们需要删除的是td的父亲的父亲tr
+                                that.parent().parent().remove();
+                            }
+                        }
+                    })
+                }
             })
         })
     </script>
